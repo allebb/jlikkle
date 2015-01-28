@@ -15,6 +15,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class jLikkle {
 
@@ -31,7 +37,7 @@ public class jLikkle {
      * Store the request method.
      */
     private String request_method = null;
-    
+
     /**
      * Stores the last HTTP response code following the API request.
      */
@@ -46,6 +52,9 @@ public class jLikkle {
         return HTTP_LK2IN_URL + HTTP_LK2IN_WS_PATH + this.request_method;
     }
 
+    /**
+     * Sends the API request to the LK2 web service.
+     */
     private void sendRequest() {
         String url = this.generateRequestUri();
 
@@ -73,18 +82,39 @@ public class jLikkle {
     }
 
     /**
-     * Returns the raw web service response (JSON)
+     * Decodes the JSON string to a usable JSONObject
      *
+     * @param json
      * @return
      */
-    public String getRawResponse() {
-        this.setRequestMethod("stats?hash=cU");
-        this.sendRequest();
-        return this.response;
+    private JSONObject responseDecode() throws ParseException {
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(this.response); // Complete response.
+        JSONObject dataObject = (JSONObject) jsonParser.parse(jsonObject.get("data").toString()); // The 'data' section.
+        JSONObject statsObject = (JSONObject) jsonParser.parse(dataObject.get("stats").toString()); // The 'data.stats' section.
+        return statsObject;
+
     }
 
     /**
-     * Set the raw response.
+     * Return statistics for the
+     *
+     * @param shortcode
+     * @return
+     */
+    public String getStats(String shortcode) {
+        this.setRequestMethod("stats?hash=" + shortcode);
+        this.sendRequest();
+
+        try {
+            return this.responseDecode().get("total_visits").toString();
+        } catch (ParseException ex) {
+            return "Not found!";
+        }
+    }
+
+    /**
+     * Set the plaintext response.
      *
      * @param response
      */
@@ -93,7 +123,16 @@ public class jLikkle {
     }
 
     /**
-     * Set the request method.
+     * Returns the raw web service response (JSON)
+     *
+     * @return
+     */
+    public String getRawResponse() {
+        return this.response;
+    }
+
+    /**
+     * Set the request method (endpoint).
      *
      * @param method
      */
