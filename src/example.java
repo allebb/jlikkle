@@ -18,7 +18,7 @@ public class example {
         jLikkle Lk2client = new jLikkle();
         
         String resp = Lk2client.getRawResponse();
-        System.out.println("The raw response was:" + resp);
+        System.out.println(resp);
     }
 
 }

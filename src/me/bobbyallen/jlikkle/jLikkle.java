@@ -19,7 +19,7 @@ import java.net.URL;
 public class jLikkle {
 
     private final String HTTP_LK2IN_URL = "http://lk2.in/";
-    private final String HTTP_LK2IN_WS_PATH = "api/vi/";
+    private final String HTTP_LK2IN_WS_PATH = "api/v1/";
     private final String USER_AGENT = "jLikkle/1.0";
 
     /**
@@ -31,6 +31,11 @@ public class jLikkle {
      * Store the request method.
      */
     private String request_method = null;
+    
+    /**
+     * Stores the last HTTP response code following the API request.
+     */
+    private int response_code = 0;
 
     /**
      * Generate the request URL to be used in the web service request.
@@ -51,9 +56,7 @@ public class jLikkle {
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", USER_AGENT);
 
-            int responseCode = con.getResponseCode();
-            //System.out.println("\nSending 'GET' request to URL : " + url);
-            //System.out.println("Response Code : " + responseCode);
+            this.response_code = con.getResponseCode();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
