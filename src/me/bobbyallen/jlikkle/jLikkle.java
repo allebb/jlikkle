@@ -1,4 +1,5 @@
 package me.bobbyallen.jlikkle;
+
 /**
  * jLikkle is a JAVA client library for the lk2.in URL shortener service
  * (http://lk2.in).
@@ -10,10 +11,16 @@ package me.bobbyallen.jlikkle;
  * @link http://bobbyallen.me
  *
  */
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class jLikkle {
 
-    public static final String HTTP_LK2IN_URL = "http://lk2.in/";
-    public static final String HTTP_LK2IN_WS_PATH = "api/vi/";
+    private final String HTTP_LK2IN_URL = "http://lk2.in/";
+    private final String HTTP_LK2IN_WS_PATH = "api/vi/";
+    private final String USER_AGENT = "jLikkle/1.0";
 
     /**
      * Object storage for the web service response.
@@ -31,7 +38,35 @@ public class jLikkle {
      * @return
      */
     protected String generateRequestUri() {
-        return jLikkle.HTTP_LK2IN_URL + jLikkle.HTTP_LK2IN_WS_PATH + this.request_method;
+        return HTTP_LK2IN_URL + HTTP_LK2IN_WS_PATH + this.request_method;
+    }
+
+    private void sendRequest() {
+        String url = this.generateRequestUri();
+
+        try {
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent", USER_AGENT);
+
+            int responseCode = con.getResponseCode();
+            //System.out.println("\nSending 'GET' request to URL : " + url);
+            //System.out.println("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            this.response = response.toString();
+        } catch (Exception ex) {
+            System.out.println("Exception caught: " + ex.getMessage());
+        }
     }
 
     /**
@@ -40,6 +75,8 @@ public class jLikkle {
      * @return
      */
     public String getRawResponse() {
+        this.setRequestMethod("stats?hash=cU");
+        this.sendRequest();
         return this.response;
     }
 
