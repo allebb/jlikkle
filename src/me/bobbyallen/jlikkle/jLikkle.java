@@ -1,4 +1,4 @@
-
+package me.bobbyallen.jlikkle;
 /**
  * jLikkle is a JAVA client library for the lk2.in URL shortener service
  * (http://lk2.in).
