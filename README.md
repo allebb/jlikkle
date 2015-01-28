@@ -1,4 +1,4 @@
-jLikke
+jLikkle
 ======
 
 jLikkle is a JAVA client library for the [lk2.in](http://lk2.in) URL shortener service, it is a
@@ -12,7 +12,7 @@ This library is released under the [MIT license](LICENSE).
 Examples
 --------
 
-A simple working example (a JAVA cli application) that utilising the class can be found under ```src/test.java```.
+A simple working example (a JAVA cli application) that is utilising the client can be found under ```src/test.java```.
 
 Support
 -------
