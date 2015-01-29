@@ -15,9 +15,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-
-import org.json.simple.JSONArray;
+import java.net.URLEncoder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -97,6 +95,26 @@ public class jLikkle {
         return statsObject;
     }
 
+    /**
+     * Makes a request for a new short code from the LK2 web API.
+     * @param long_url
+     * @param encode
+     * @return 
+     */
+    public String getShortUrl(String long_url, boolean encode){
+        // URL encode the long URL if it isn't already.
+        if(encode){
+            long_url = URLEncoder.encode(long_url, "UTF-8");
+        }
+        // Build the request string
+        
+        // Make the API request
+        
+        // Return the new short code (NOT the full URL!)
+        
+    }
+    
+    
     /**
      * Return statistics for the shortcode
      *
