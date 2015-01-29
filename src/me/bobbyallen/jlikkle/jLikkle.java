@@ -22,7 +22,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class jLikkle {
-    
+
     private final String HTTP_LK2IN_URL = "http://lk2.in/";
     private final String HTTP_LK2IN_WS_PATH = "api/v1/";
     private final String USER_AGENT = "jLikkle/1.0";
@@ -58,20 +58,20 @@ public class jLikkle {
      */
     private void sendRequest() {
         String url = this.generateRequestUri();
-        
+
         try {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            
+
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", USER_AGENT);
-            
+
             this.response_code = con.getResponseCode();
-            
+
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuffer response = new StringBuffer();
-            
+
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
@@ -124,7 +124,7 @@ public class jLikkle {
             return "Not found!";
         }
         // Build the request string
-        this.setRequestMethod("stats?hash=" + long_url);
+        this.setRequestMethod("shorten?long_url=" + long_url);
         // Make the API request
         this.sendRequest();
         // Return the new short code (NOT the full URL!)
@@ -133,11 +133,11 @@ public class jLikkle {
         } catch (ParseException ex) {
             return "Not found!";
         }
-        
+
     }
 
     /**
-     * Return statistics for the shortcode
+     * Return statistics for the short URL (hash)
      *
      * @param shortcode String
      * @return String
@@ -153,6 +153,15 @@ public class jLikkle {
     }
 
     /**
+     * Get the plaintext response from the object.
+     *
+     * @return String
+     */
+    public String getRawResponse() {
+        return this.response;
+    }
+
+    /**
      * Set the plaintext response.
      *
      * @param response The plaintext response from the web API request.
@@ -163,15 +172,6 @@ public class jLikkle {
     }
 
     /**
-     * Get the plaintext response from the object.
-     *
-     * @return String
-     */
-    public String getRawResponse() {
-        return this.response;
-    }
-
-    /**
      * Set the API request method/API endpoint
      *
      * @param String method
@@ -179,5 +179,5 @@ public class jLikkle {
     private void setRequestMethod(String method) {
         this.request_method = method;
     }
-    
+
 }
