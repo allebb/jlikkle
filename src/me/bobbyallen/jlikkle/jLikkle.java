@@ -107,11 +107,15 @@ public class jLikkle {
             long_url = URLEncoder.encode(long_url, "UTF-8");
         }
         // Build the request string
-        
+        this.setRequestMethod("stats?hash=" + long_url);
         // Make the API request
-        
+        this.sendRequest();
         // Return the new short code (NOT the full URL!)
-        
+         try {
+            return this.responseDecode().get("hash").toString();
+        } catch (ParseException ex) {
+            return "Not found!";
+        }
     }
     
     
