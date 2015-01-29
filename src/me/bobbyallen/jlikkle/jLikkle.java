@@ -13,6 +13,7 @@ package me.bobbyallen.jlikkle;
  */
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -21,7 +22,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class jLikkle {
-
+    
     private final String HTTP_LK2IN_URL = "http://lk2.in/";
     private final String HTTP_LK2IN_WS_PATH = "api/v1/";
     private final String USER_AGENT = "jLikkle/1.0";
@@ -57,20 +58,20 @@ public class jLikkle {
      */
     private void sendRequest() {
         String url = this.generateRequestUri();
-
+        
         try {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
+            
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", USER_AGENT);
-
+            
             this.response_code = con.getResponseCode();
-
+            
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuffer response = new StringBuffer();
-
+            
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
@@ -82,43 +83,59 @@ public class jLikkle {
     }
 
     /**
-     * Decodes the JSON string to a usable JSONObject
+     * Decodes the JSON string to a usable 'data' section JSONObject
      *
      * @return JSONObject
      * @throws ParseException
      */
-    private JSONObject responseDecode() throws ParseException {
+    private JSONObject responseDecodeData() throws ParseException {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(this.response); // Complete response.
         JSONObject dataObject = (JSONObject) jsonParser.parse(jsonObject.get("data").toString()); // The 'data' section.
+        return dataObject;
+    }
+
+    /**
+     * Decodes the JSON data section to a usable 'stats' JSONObject
+     *
+     * @return JSONObject
+     * @throws ParseException
+     */
+    private JSONObject responseDecodeStats(JSONObject dataObject) throws ParseException {
+        JSONParser jsonParser = new JSONParser();
         JSONObject statsObject = (JSONObject) jsonParser.parse(dataObject.get("stats").toString()); // The 'data.stats' section.
         return statsObject;
     }
 
     /**
      * Makes a request for a new short code from the LK2 web API.
+     *
      * @param long_url
      * @param encode
-     * @return 
+     * @return
      */
-    public String getShortUrl(String long_url, boolean encode){
+    public String getShortUrl(String long_url, boolean encode) {
         // URL encode the long URL if it isn't already.
-        if(encode){
-            long_url = URLEncoder.encode(long_url, "UTF-8");
+        try {
+            if (encode) {
+                long_url = URLEncoder.encode(long_url, "UTF-8");
+            }
+        } catch (UnsupportedEncodingException ex) {
+            return "Not found!";
         }
         // Build the request string
         this.setRequestMethod("stats?hash=" + long_url);
         // Make the API request
         this.sendRequest();
         // Return the new short code (NOT the full URL!)
-         try {
-            return this.responseDecode().get("hash").toString();
+        try {
+            return this.responseDecodeData().get("hash").toString();
         } catch (ParseException ex) {
             return "Not found!";
         }
+        
     }
-    
-    
+
     /**
      * Return statistics for the shortcode
      *
@@ -129,7 +146,7 @@ public class jLikkle {
         this.setRequestMethod("stats?hash=" + shortcode);
         this.sendRequest();
         try {
-            return this.responseDecode().get("total_visits").toString();
+            return this.responseDecodeStats(this.responseDecodeData()).get("total_visits").toString();
         } catch (ParseException ex) {
             return "Not found!";
         }
@@ -162,5 +179,5 @@ public class jLikkle {
     private void setRequestMethod(String method) {
         this.request_method = method;
     }
-
+    
 }
