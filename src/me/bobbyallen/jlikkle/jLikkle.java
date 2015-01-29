@@ -54,6 +54,8 @@ public class jLikkle {
 
     /**
      * Sends the API request to the LK2 web service.
+     *
+     * @return void
      */
     private void sendRequest() {
         String url = this.generateRequestUri();
@@ -84,8 +86,8 @@ public class jLikkle {
     /**
      * Decodes the JSON string to a usable JSONObject
      *
-     * @param json
-     * @return
+     * @return JSONObject
+     * @throws ParseException
      */
     private JSONObject responseDecode() throws ParseException {
         JSONParser jsonParser = new JSONParser();
@@ -93,19 +95,17 @@ public class jLikkle {
         JSONObject dataObject = (JSONObject) jsonParser.parse(jsonObject.get("data").toString()); // The 'data' section.
         JSONObject statsObject = (JSONObject) jsonParser.parse(dataObject.get("stats").toString()); // The 'data.stats' section.
         return statsObject;
-
     }
 
     /**
-     * Return statistics for the
+     * Return statistics for the shortcode
      *
-     * @param shortcode
-     * @return
+     * @param shortcode String
+     * @return String
      */
     public String getStats(String shortcode) {
         this.setRequestMethod("stats?hash=" + shortcode);
         this.sendRequest();
-
         try {
             return this.responseDecode().get("total_visits").toString();
         } catch (ParseException ex) {
@@ -116,25 +116,26 @@ public class jLikkle {
     /**
      * Set the plaintext response.
      *
-     * @param response
+     * @param response The plaintext response from the web API request.
+     * @return void
      */
     private void setResponse(String response) {
         this.response = response;
     }
 
     /**
-     * Returns the raw web service response (JSON)
+     * Get the plaintext response from the object.
      *
-     * @return
+     * @return String
      */
     public String getRawResponse() {
         return this.response;
     }
 
     /**
-     * Set the request method (endpoint).
+     * Set the API request method/API endpoint
      *
-     * @param method
+     * @param String method
      */
     private void setRequestMethod(String method) {
         this.request_method = method;
